@@ -139,7 +139,7 @@ console.log(envioCiudad)
           <ReactPlayer className='react-player' url={iconToFondo[datosMeteologicos.weather?.[0].icon]} playing loop muted width='3000px' height='100%' />
         </div>
       </div>
-      <div className="gap-4  container mx-auto relative py-4 z-50 bg-gray-700 rounded-lg opacity-80 grid grid-cols-4 min-h-[80vh]">
+      <div className="gap-4 mb-5 container mx-auto relative py-4 z-50  bg-gray-700 rounded-lg opacity-80 grid grid-cols-4 min-h-[80vh]">
         <div className="md:col-span-2 col-span-4 mx-auto text-center grid items-center">
           <h1 className="text-white text-[1.5em]">{datosMeteologicos.sys?.country}, {datosMeteologicos.name}</h1>
           <img className="h-[25vh] w-auto" src={`https://openweathermap.org/img/wn/${datosMeteologicos.weather?.[0].icon}@2x.png`} alt="" />
