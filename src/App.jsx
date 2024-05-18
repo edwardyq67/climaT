@@ -59,7 +59,8 @@ function App() {
   function success(pos) {
     const crd = pos.coords;
     axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
-      .then(res => setDatosMeteologicos(res.data));
+      .then(res => setDatosMeteologicos(res.data))
+      .catch(err => console.error(err));
   }
 
   function error(err) {
@@ -71,12 +72,14 @@ function App() {
     const ciudad = e.split(",")[0];
     if (ciudad) {
       const busqueda = countryPais.find(ciudadPais => ciudadPais.ciudad === ciudad);
-      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${busqueda.latitude}&lon=${busqueda.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
-        .then(res => setDatosMeteologicos(res.data));
+      if (busqueda) {
+        axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${busqueda.latitude}&lon=${busqueda.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
+          .then(res => setDatosMeteologicos(res.data))
+          .catch(err => console.error(err));
+      }
     }
     setEnvioCiudad(ciudad);
   }
-
   const iconToFondo = {
     "01d": unod,
     "02d": dosd,
