@@ -26,14 +26,11 @@ import Temperatura from "./graficos/Temperatura";
 import Precipitation from "./graficos/Precipitation";
 import Precion from "./graficos/Precion";
 
-
 function App() {
-
   const [countryPais, setCountryPais] = useState([]);
   const [input, setInput] = useState("");
   const [datosMeteologicos, setDatosMeteologicos] = useState([]);
-
-  const [envioCiudad,setEnvioCiudad]=useState("Lima")
+  const [envioCiudad, setEnvioCiudad] = useState("Lima");
 
   useEffect(() => {
     const nuevoArray = State.getAllStates().map(ciudad => {
@@ -44,7 +41,7 @@ function App() {
         isoCode: ciudad.isoCode,
         ciudadPais: `${ciudad.name}, ${pais ? pais.name : 'Desconocido'}`,
         latitude: ciudad.latitude,
-        longitude: ciudad.longitude ,
+        longitude: ciudad.longitude,
         isoCodepais: pais ? pais.isoCode : 'Desconocido',
       };
     });
@@ -52,27 +49,32 @@ function App() {
   }, []);
 
   useEffect(() => {
-    function success(pos) {
-      const crd = pos.coords;
-      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
-        .then(res => setDatosMeteologicos(res.data));
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      console.log("Geolocation is not supported by this browser.");
     }
-
-    function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
-    }
-
-    navigator.geolocation.getCurrentPosition(success, error);
   }, []);
+
+  function success(pos) {
+    const crd = pos.coords;
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
+      .then(res => setDatosMeteologicos(res.data));
+  }
+
+  function error(err) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+    alert("No se pudo obtener la ubicación. Por favor, introduzca la ubicación manualmente.");
+  }
 
   const textoLL = (e) => {
     const ciudad = e.split(",")[0];
     if (ciudad) {
-      const busqueda = countryPais.find(ciudadPais => ciudadPais.ciudad === ciudad);  
+      const busqueda = countryPais.find(ciudadPais => ciudadPais.ciudad === ciudad);
       axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${busqueda.latitude}&lon=${busqueda.longitude}&appid=a7614b3e8f00edd02b077b80667b6593`)
         .then(res => setDatosMeteologicos(res.data));
     }
-    setEnvioCiudad(ciudad)
+    setEnvioCiudad(ciudad);
   }
 
   const iconToFondo = {
@@ -96,11 +98,8 @@ function App() {
     "50n": cincuentan,
   };
 
-console.log(envioCiudad)
-// console.log(countryPais)
-// console.log(Country.getAllCountries())
   return (
-    <div className="bg-white px-2 border-gray-200 dark:bg-gray-900">
+    <div className="bg-white px-2 border-gray-200 dark:bg-gray-900 min-h-[100vh]">
       <div className="container mx-auto relative py-4 z-50">
         <div onClick={() => textoLL(input)} className=" absolute inset-y-0 start-0 flex items-center ps-3 cursor-pointer">
           <svg
@@ -135,7 +134,7 @@ console.log(envioCiudad)
         </datalist>
       </div>
       <div className="video fixed top-0 left-0 w-[100vw] h-[100vh]">
-        <div className='player-wrapper '>
+        <div className='player-wrapper'>
           <ReactPlayer className='react-player' url={iconToFondo[datosMeteologicos.weather?.[0].icon]} playing loop muted width='3000px' height='100%' />
         </div>
       </div>
@@ -151,18 +150,15 @@ console.log(envioCiudad)
           <h2 className="text-white"><b className="text-white opacity-50" >HUMEDAD: </b> {datosMeteologicos.main?.humidity}%</h2>
           <h2 className="text-white"><b className="text-white opacity-50" >PRECION: </b> {datosMeteologicos.main?.pressure} hPa</h2>
         </div>
-       
+
         <div className="mb-4 col-span-4 lg:col-span-2 grid items-center md:overflow-hidden overflow-x-scroll">
-          <Temperatura envioCiudad={envioCiudad}/>
-
+          <Temperatura envioCiudad={envioCiudad} />
         </div>
         <div className="col-span-4 lg:col-span-2 grid items-center md:overflow-hidden overflow-x-scroll">
-          <Precipitation envioCiudad={envioCiudad}/>
-
+          <Precipitation envioCiudad={envioCiudad} />
         </div>
         <div className="col-span-4 lg:col-span-2 grid items-center md:overflow-hidden overflow-x-scroll">
-          <Precion envioCiudad={envioCiudad}/>
-
+          <Precion envioCiudad={envioCiudad} />
         </div>
       </div>
     </div>
